@@ -439,7 +439,10 @@ public final class InventorySubtree {
                         matches = true;
                         break;
                     }
-                } else if (display.result() instanceof SlotDisplay.ItemStackSlotDisplay(ItemStack stack)) {
+                } else if (display.result() instanceof SlotDisplay.ItemStackSlotDisplay(var stack)) {
+                    //? if >=26.1 {
+                    /*if (stack.item().value() == targetItem) {
+                    *///?} else
                     if (stack.getItem() == targetItem) {
                         matches = true;
                         break;

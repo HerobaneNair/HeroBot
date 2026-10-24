@@ -11,6 +11,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(RideCommand.class)
 public class RideCommandMixin {
 
+    //? if >=26.1 {
+    /*@Redirect(
+            method = "mount",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/Entity;is(Ljava/lang/Object;)Z"
+            )
+    )
+    private static boolean allowPlayerMounts(Entity entity, Object type) {
+        if (type == EntityType.PLAYER && HeroBotSettings.editablePlayerNbt) {
+            return false;
+        }
+        return entity.is((EntityType<?>) type);
+    }
+    *///?} else {
     @Redirect(
             method = "mount",
             at = @At(
@@ -25,4 +40,5 @@ public class RideCommandMixin {
         }
         return type;
     }
+    //?}
 }

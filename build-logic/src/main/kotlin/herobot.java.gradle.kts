@@ -5,11 +5,15 @@ plugins {
 }
 
 val libs = the<LibrariesForLibs>()
-val javaVersion = libs.versions.java.get().toInt()
 
-// <mc version>-<project version>+v<yyMMdd>, stamped once by the root build so the Fabric and Paper
+val javaVersion = findProperty("java_version")?.toString()?.toInt() ?: libs.versions.java.get().toInt()
+extra["javaVersion"] = javaVersion
+
+val minecraftVersion = project.name
+
+// <mc version>-<project version>+v<yyMMdd>, dated once by the root build so the Fabric and Paper
 // artifacts of one build always agree. Read it back as `artifactVersion` from either module.
-extra["artifactVersion"] = rootProject.extra["artifactVersion"] as String
+extra["artifactVersion"] = "$minecraftVersion-$version+v${rootProject.extra["buildDate"]}"
 
 repositories {
     mavenCentral()

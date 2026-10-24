@@ -2,6 +2,7 @@ package hero.bane.herobot.mod.client.screen.ai.starfield;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import hero.bane.herobot.mod.client.mixin.GuiRenderStateAccessor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
@@ -62,7 +63,7 @@ public final class PixelBatch implements GuiElementRenderState {
             count = 0;
             return;
         }
-        g.guiRenderState.submitGuiElement(this);
+        ((GuiRenderStateAccessor) g).herobot$guiRenderState().submitGuiElement(this);
     }
 
     private void grow() {

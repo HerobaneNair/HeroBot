@@ -21,8 +21,22 @@ import java.util.regex.Pattern;
 
 public class ChunkResetter {
 
+    private static int x(ChunkPos pos) {
+        //? if >=26.1 {
+        /*return pos.x();
+        *///?} else
+        return pos.x;
+    }
+
+    private static int z(ChunkPos pos) {
+        //? if >=26.1 {
+        /*return pos.z();
+        *///?} else
+        return pos.z;
+    }
+
     public static boolean resetChunk(ServerLevel level, ChunkPos pos) {
-        if (level.getChunkSource().getChunkNow(pos.x, pos.z) != null) {
+        if (level.getChunkSource().getChunkNow(x(pos), z(pos)) != null) {
             return false;
         }
 
@@ -42,10 +56,10 @@ public class ChunkResetter {
     }
 
     public static ChunkDeleteResult resetChunkRange(ServerLevel level, ChunkPos from, ChunkPos to) {
-        int minX = Math.min(from.x, to.x);
-        int minZ = Math.min(from.z, to.z);
-        int maxX = Math.max(from.x, to.x);
-        int maxZ = Math.max(from.z, to.z);
+        int minX = Math.min(x(from), x(to));
+        int minZ = Math.min(z(from), z(to));
+        int maxX = Math.max(x(from), x(to));
+        int maxZ = Math.max(z(from), z(to));
 
         int resetted = 0;
         int skipped = 0;
@@ -79,7 +93,7 @@ public class ChunkResetter {
         int resetted = 0;
         int skipped = 0;
         for (ChunkPos pos : allChunks) {
-            if (level.getChunkSource().getChunkNow(pos.x, pos.z) != null) {
+            if (level.getChunkSource().getChunkNow(x(pos), z(pos)) != null) {
                 skipped++;
                 continue;
             }
@@ -101,7 +115,7 @@ public class ChunkResetter {
     private static void discardEntities(ServerLevel level, ChunkPos pos) {
         List<Entity> toRemove = new ArrayList<>();
         level.getAllEntities().forEach(e -> {
-            if (!(e instanceof Player) && pos.equals(new ChunkPos(e.blockPosition()))) {
+            if (!(e instanceof Player) && pos.equals(e.chunkPosition())) {
                 toRemove.add(e);
             }
         });

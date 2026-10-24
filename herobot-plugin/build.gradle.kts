@@ -4,7 +4,7 @@ plugins {
     id("herobot.java")
     id("herobot.shade")
     id("herobot.paper-plugin")
-    alias(libs.plugins.paperweight.userdev)
+    id("io.papermc.paperweight.userdev")
 }
 
 description = "HeroBot for Paper."
@@ -17,9 +17,9 @@ base {
 }
 
 dependencies {
-    paperweight.paperDevBundle(libs.versions.paper.get())
+    paperweight.paperDevBundle(sc.properties.get<String>("deps.paper"))
 
-    implementation(projects.herobotCommon)
+    implementation(project(":herobot-common"))
 
     compileOnly(libs.voicechat.api)
 }

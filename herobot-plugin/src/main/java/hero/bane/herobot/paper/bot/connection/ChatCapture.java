@@ -19,9 +19,13 @@ public final class ChatCapture {
             return content.getString();
         }
         if (packet instanceof ClientboundPlayerChatPacket p) {
+            //? if >=26.3 {
+            /*Component content = p.unsignedContent().orElseGet(() -> Component.literal(p.body().content()));
+            *///?} else {
             Component content = p.unsignedContent() != null
                     ? p.unsignedContent()
                     : Component.literal(p.body().content());
+            //?}
             return p.chatType().decorate(content).getString();
         }
         if (packet instanceof ClientboundDisguisedChatPacket(Component message, ChatType.Bound chatType)) {

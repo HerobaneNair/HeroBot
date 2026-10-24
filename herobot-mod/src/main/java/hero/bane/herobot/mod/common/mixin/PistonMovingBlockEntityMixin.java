@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PistonMovingBlockEntity.class)
 public class PistonMovingBlockEntityMixin {
 
+    //? if <26.3 {
     @Definition(id = "entity", local = @Local(type = Entity.class))
     @Definition(id = "ServerPlayer", type = ServerPlayer.class)
     @Expression("entity instanceof ServerPlayer")
@@ -22,4 +23,5 @@ public class PistonMovingBlockEntityMixin {
         if (entity instanceof BotPlayer) return false;
         return original;
     }
+    //?}
 }

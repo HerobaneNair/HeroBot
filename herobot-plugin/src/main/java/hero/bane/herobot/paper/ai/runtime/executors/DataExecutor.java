@@ -126,9 +126,15 @@ public final class DataExecutor {
         String s = ParamEval.asString(value).trim();
         if (s.isEmpty()) return ItemStack.EMPTY;
         try {
+            //? if >=26.1 {
+            /*return new ItemParser(r.player().level().registryAccess())
+                    .parse(new StringReader(s))
+                    .createItemStack(1);
+            *///?} else {
             ItemParser.ItemResult res = new ItemParser(r.player().level().registryAccess())
                     .parse(new StringReader(s));
             return new ItemInput(res.item(), res.components()).createItemStack(1, false);
+            //?}
         } catch (Exception e) {
             return ItemStack.EMPTY;
         }

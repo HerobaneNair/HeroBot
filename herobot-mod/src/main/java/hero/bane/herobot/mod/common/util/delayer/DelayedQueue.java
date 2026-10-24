@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +82,10 @@ public final class DelayedQueue {
                         entity.getRotationVector(),
                         (ServerLevel) entity.level(),
                         PermissionSet.ALL_PERMISSIONS,
+                        //? if <26.3 {
                         entity.getName().getString(),
                         entity.getDisplayName(),
+                        //?}
                         server,
                         entity
                 ).withCallback(CommandResultCallback.EMPTY);
@@ -94,14 +97,19 @@ public final class DelayedQueue {
 
                 source = new CommandSourceStack(
                         server,
-                        executor.pos.getCenter(),
+                        Vec3.atCenterOf(executor.pos),
                         Vec2.ZERO,
                         level,
                         PermissionSet.ALL_PERMISSIONS,
+                        //? if <26.3
                         "@",
                         Component.literal("@"),
+                        //? if >=26.3 {
+                        /*server
+                        *///?} else {
                         server,
                         null
+                        //?}
                 ).withCallback(CommandResultCallback.EMPTY);
 
             } else {

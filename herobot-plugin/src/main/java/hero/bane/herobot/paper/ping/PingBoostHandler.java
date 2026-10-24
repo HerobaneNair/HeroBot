@@ -10,6 +10,8 @@ import hero.bane.herobot.common.ping.PingDelayOptions;
 import net.minecraft.network.protocol.game.ServerboundChatAckPacket;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+//? if >=26.1
+/*import net.minecraft.network.protocol.game.ServerboundAttackPacket;*/
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
@@ -306,12 +308,22 @@ public final class PingBoostHandler extends ChannelDuplexHandler {
         if (packet instanceof ServerboundMovePlayerPacket move && move.hasRotation()) {
             return PingDelayOptions.Category.LOOK;
         }
+        //? if >=26.1 {
+        /*if (packet instanceof ServerboundAttackPacket) {
+            return PingDelayOptions.Category.ATTACK;
+        }
+        if (packet instanceof ServerboundInteractPacket) {
+            return PingDelayOptions.Category.USE;
+        }
+        *///?} else {
         if (packet instanceof ServerboundInteractPacket interact) {
             return attackOrUse(interact);
         }
+        //?}
         return null;
     }
 
+    //? if <26.1 {
     private static PingDelayOptions.Category attackOrUse(ServerboundInteractPacket interact) {
         InteractionKind kind = new InteractionKind();
         interact.dispatch(kind);
@@ -334,6 +346,7 @@ public final class PingBoostHandler extends ChannelDuplexHandler {
             attack = true;
         }
     }
+    //?}
 
     private boolean delays(Packet<?> packet) {
         PingDelayOptions.Category category = categoryOf(packet);

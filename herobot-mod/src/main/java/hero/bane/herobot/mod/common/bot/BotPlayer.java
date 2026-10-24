@@ -96,7 +96,8 @@ public class BotPlayer extends ServerPlayer {
         applyPing();
     }
 
-    private record DelayedKnockback(long tick, double strength, double x, double z, double horizontalScale) {
+    private record DelayedKnockback(long tick, double strength, double x, double z, double horizontalScale,
+                                    DamageSource source, float damage, boolean caused) {
     }
 
     private final List<DelayedKnockback> pendingKnockbacks = new ArrayList<>();
@@ -534,7 +535,8 @@ public class BotPlayer extends ServerPlayer {
         if (!pendingKnockbacks.isEmpty()) {
             pendingKnockbacks.removeIf(kb -> {
                 if (currentTick >= kb.tick()) {
-                    applyKnockbackWithScale(kb.strength(), kb.x(), kb.z(), kb.horizontalScale());
+                    applyKnockbackWithScale(kb.strength(), kb.x(), kb.z(), kb.horizontalScale(),
+                            kb.source(), kb.damage(), kb.caused());
                     return true;
                 }
                 return false;
@@ -561,27 +563,40 @@ public class BotPlayer extends ServerPlayer {
         }
     }
 
+    //? if >=26.2 {
+    /*@Override
+    public void knockback(double strength, double x, double z, DamageSource source, float damage, boolean caused) {
+        if (this.getAbilities().invulnerable) return;
+        scaledKnockback(strength, x, z, 1.0, source, damage, caused);
+    }
+    *///?} else {
     @Override
     public void knockback(double strength, double x, double z) {
         if (this.getAbilities().invulnerable) return;
-        scaledKnockback(strength, x, z, 1.0);
+        scaledKnockback(strength, x, z, 1.0, null, 0.0F, false);
     }
+    //?}
 
-    private void scaledKnockback(double strength, double x, double z, double horizontalScale) {
+    private void scaledKnockback(double strength, double x, double z, double horizontalScale,
+                                 DamageSource source, float damage, boolean caused) {
         int delayTicks = knockbackDelayTicks();
         if (delayTicks <= 0) {
-            applyKnockbackWithScale(strength, x, z, horizontalScale);
+            applyKnockbackWithScale(strength, x, z, horizontalScale, source, damage, caused);
         } else {
             long executeAt = this.level().getServer().getTickCount() + delayTicks;
-            pendingKnockbacks.add(new DelayedKnockback(executeAt, strength, x, z, horizontalScale));
+            pendingKnockbacks.add(new DelayedKnockback(executeAt, strength, x, z, horizontalScale, source, damage, caused));
         }
         if (pathFollower != null && !pathFollower.isDone()) {
             pathFollower.recalcPath();
         }
     }
 
-    private void applyKnockbackWithScale(double strength, double x, double z, double horizontalScale) {
+    private void applyKnockbackWithScale(double strength, double x, double z, double horizontalScale,
+                                         DamageSource source, float damage, boolean caused) {
         if (horizontalScale >= 1.0) {
+            //? if >=26.2 {
+            /*super.knockback(strength, x, z, source, damage, caused);
+            *///?} else
             super.knockback(strength, x, z);
             return;
         }
@@ -673,7 +688,7 @@ public class BotPlayer extends ServerPlayer {
                 return false;
             }
 
-            if (damageSource.is(DamageTypeTags.IS_FREEZING) && this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+            if (damageSource.is(DamageTypeTags.IS_FREEZING) && this.getType().builtInRegistryHolder().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
                 finalDamage *= 5.0F;
             }
 
@@ -741,7 +756,7 @@ public class BotPlayer extends ServerPlayer {
                                 && shieldDisabledTick >= 0
                                 && (currentTick - shieldDisabledTick) <= HeroBotSettings.shieldStunningWindow;
                         double horizontalScale = recentShieldDisable ? 0.4d : 1.0d;
-                        this.scaledKnockback(0.4d, kb_x, kb_z, horizontalScale);
+                        this.scaledKnockback(0.4d, kb_x, kb_z, horizontalScale, damageSource, finalDamage, false);
                         this.indicateDamage(kb_x, kb_z);
                     }
                 }
@@ -872,6 +887,11 @@ public class BotPlayer extends ServerPlayer {
     }
 
     @Override
+    //? if >=26.3 {
+    /*protected void blockUsingItem(@NonNull ServerLevel serverLevel, LivingEntity livingEntity, DamageSource damageSource, float damage, boolean fullyBlocked) {
+    *///?} elif >=26.2 {
+    /*protected void blockUsingItem(@NonNull ServerLevel serverLevel, LivingEntity livingEntity, DamageSource damageSource, float damage) {
+    *///?} else
     protected void blockUsingItem(@NonNull ServerLevel serverLevel, LivingEntity livingEntity) {
         ItemStack itemStack = this.getItemBlockingWith();
         BlocksAttacks blocksAttacks = itemStack != null ? itemStack.get(DataComponents.BLOCKS_ATTACKS) : null;

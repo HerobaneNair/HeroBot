@@ -25,7 +25,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
-import org.lwjgl.glfw.GLFW;
 import hero.bane.herobot.common.networking.ChunkReassembler;
 import hero.bane.herobot.common.networking.ScriptCompression;
 
@@ -110,7 +109,7 @@ public class HeroBotClient implements ClientModInitializer {
         openAiEditorKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.herobot.open_ai_editor",
                 InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_BRACKET,
+                InputConstants.KEY_RBRACKET,
                 category));
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {

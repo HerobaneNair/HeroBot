@@ -1,0 +1,29 @@
+deps.fabric_loader = "0.19.5"
+
+["1.21.11"]
+java_version = 21
+mod.mc_compat = "1.21.11"
+deps.fabric_api = "0.141.6+1.21.11"
+deps.carpet = "1.4.194"
+deps.paper = "1.21.11-R0.1-SNAPSHOT"
+
+["26.1.2"]
+java_version = 25
+mod.mc_compat = "~26.1.2"
+deps.fabric_api = "0.155.3+26.1.2"
+deps.carpet = "26.1"
+deps.paper = "26.1.2.build.74-stable"
+
+["26.2"]
+java_version = 25
+mod.mc_compat = "~26.2"
+deps.fabric_api = "0.161.0+26.2"
+deps.carpet = "26.2"
+deps.paper = "26.2.build.134-stable"
+
+["26.3"]
+java_version = 25
+mod.mc_compat = "~26.3"
+deps.fabric_api = "0.165.0+26.3"
+deps.carpet = "26.3"
+deps.paper = "26.3.build.222-stable"

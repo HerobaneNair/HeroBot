@@ -1,11 +1,14 @@
 plugins {
-    alias(libs.plugins.fabric.loom)
+    id("dev.kikugie.loom-back-compat")
     id("herobot.java")
     id("herobot.shade")
     `maven-publish`
 }
 
 description = "HeroBot for Fabric."
+
+val minecraftVersion = sc.current.version
+val isUnobfuscated = sc.current.parsed >= "26"
 
 version = extra["artifactVersion"] as String
 
@@ -21,6 +24,10 @@ loom {
             sourceSet(sourceSets.main.get())
             sourceSet(sourceSets["client"])
         }
+    }
+
+    runConfigs.all {
+        generateRunConfig = sc.current.isActive
     }
 }
 
@@ -38,27 +45,27 @@ val shadeClasspath = configurations.resolvable("shadeClasspath") {
 }
 
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
-    modImplementation(libs.fabric.loader)
+    minecraft("com.mojang:minecraft:$minecraftVersion")
+    if (isUnobfuscated) loomx.applyMojangMappings()
+    else mappings(loom.officialMojangMappings())
 
-    modImplementation(libs.fabric.api)
-
-    modCompileOnly(libs.carpet)
+    modImplementation("net.fabricmc:fabric-loader:${sc.properties.get<String>("deps.fabric_loader")}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${sc.properties.get<String>("deps.fabric_api")}")
+    modCompileOnly("maven.modrinth:carpet:${sc.properties.get<String>("deps.carpet")}")
 
     compileOnly(libs.voicechat.api)
     "clientCompileOnly"(libs.voicechat.api)
 
-    implementation(projects.herobotCommon)
-    add(shade.name, projects.herobotCommon)
+    implementation(project(":herobot-common"))
+    add(shade.name, project(":herobot-common"))
 }
 
 tasks {
     processResources {
         val props = mapOf(
             "version" to project.version,
-            "minecraft_version" to libs.versions.minecraft.get(),
-            "loader_version" to libs.versions.fabric.loader.get(),
+            "minecraft_version" to sc.properties.get<String>("mod.mc_compat"),
+            "loader_version" to sc.properties.get<String>("deps.fabric_loader"),
         )
 
         inputs.properties(props)
@@ -69,13 +76,7 @@ tasks {
         }
     }
 
-    // shadowJar assembles its own copy of both source sets plus the bundled dependencies, then
-    // remapJar consumes it in place of Loom's `jar`. Both un-remapped jars sit in devlibs so
-    // only the final remapped artifact lands in build/libs.
     shadowJar {
-        archiveClassifier = "dev-shadow"
-        destinationDirectory = layout.buildDirectory.dir("devlibs")
-
         configurations = listOf(shadeClasspath.get())
 
         // Loom adds the client source set to `jar`, not to shadowJar.
@@ -84,10 +85,28 @@ tasks {
         from(rootProject.file("LICENSE.txt")) {
             rename { "${it}_${base.archivesName.get()}" }
         }
+
+        if (isUnobfuscated) {
+            archiveClassifier = ""
+        } else {
+            archiveClassifier = "dev-shadow"
+            destinationDirectory = layout.buildDirectory.dir("devlibs")
+        }
     }
 
-    remapJar {
-        inputFile = shadowJar.flatMap { it.archiveFile }
+    if (isUnobfuscated) {
+        jar {
+            archiveClassifier = "thin"
+            destinationDirectory = layout.buildDirectory.dir("devlibs")
+        }
+    } else {
+        named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
+            inputFile = shadowJar.flatMap { it.archiveFile }
+        }
+    }
+
+    assemble {
+        dependsOn(shadowJar)
     }
 }
 

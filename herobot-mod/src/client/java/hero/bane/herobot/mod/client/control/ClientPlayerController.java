@@ -17,7 +17,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.phys.*;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -167,14 +166,19 @@ public final class ClientPlayerController implements PlayerController {
         InputConstants.Key key = KeyBindingHelper.getBoundKeyOf(mapping);
         if (key.equals(InputConstants.UNKNOWN)) return;
         long window = mc.getWindow().handle();
-        int action = down ? GLFW.GLFW_PRESS : GLFW.GLFW_RELEASE;
+        int action = down ? InputConstants.PRESS : InputConstants.RELEASE;
         switch (key.getType()) {
             case MOUSE -> ((MouseHandlerInvoker) mc.mouseHandler)
                     .herobot$onButton(window, new MouseButtonInfo(key.getValue(), 0), action);
+            //? if >=26.3 {
+            /*case KEYBOARD -> ((KeyboardHandlerInvoker) mc.keyboardHandler)
+                    .herobot$keyPress(window, action, new KeyEvent(key.getValue(), 0, 0));
+            *///?} else {
             case KEYSYM -> ((KeyboardHandlerInvoker) mc.keyboardHandler)
                     .herobot$keyPress(window, action, new KeyEvent(key.getValue(), 0, 0));
             case SCANCODE -> ((KeyboardHandlerInvoker) mc.keyboardHandler)
                     .herobot$keyPress(window, action, new KeyEvent(InputConstants.UNKNOWN.getValue(), key.getValue(), 0));
+            //?}
         }
     }
 
@@ -187,9 +191,16 @@ public final class ClientPlayerController implements PlayerController {
         }
         switch (type) {
             case SWING -> { if (p != null) p.swing(InteractionHand.MAIN_HAND); }
-            case DROP_ITEM -> { if (p != null && p.drop(false)) p.swing(InteractionHand.MAIN_HAND); }
-            case DROP_STACK -> { if (p != null && p.drop(true)) p.swing(InteractionHand.MAIN_HAND); }
+            case DROP_ITEM -> { if (p != null) dropAndSwing(p, false); }
+            case DROP_STACK -> { if (p != null) dropAndSwing(p, true); }
         }
+    }
+
+    private static void dropAndSwing(LocalPlayer p, boolean stack) {
+        //? if >=26.3 {
+        /*mc().gameMode.dropItem(p, stack);
+        *///?} else
+        if (p.drop(stack)) p.swing(InteractionHand.MAIN_HAND);
     }
 
     private void releasePulses() {

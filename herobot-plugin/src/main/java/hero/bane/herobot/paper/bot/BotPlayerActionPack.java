@@ -901,7 +901,7 @@ public class BotPlayerActionPack implements PlayerController {
             @Override
             boolean execute(ServerPlayer player, Action action) {
                 InteractionHand hand = action.hand == null ? InteractionHand.MAIN_HAND : action.hand;
-                player.swing(hand);
+                player.swing(hand, false);
                 player.resetLastActionTime();
                 return false;
             }
@@ -941,11 +941,15 @@ private static boolean repeatUse(ServerPlayer player, HitResult hit, int uses) {
                         boolean handWasEmpty = player.getItemInHand(hand).isEmpty();
                         boolean itemFrameEmpty = (entity instanceof ItemFrame) && ((ItemFrame) entity).getItem().isEmpty();
                         Vec3 relativeHitPos = entityHit.getLocation().subtract(entity.getX(), entity.getY(), entity.getZ());
+                        //? if >=26.1 {
+                        /*if (player.interactOn(entity, hand, relativeHitPos).consumesAction() && !(handWasEmpty && itemFrameEmpty)) {
+                        *///?} else {
                         if (entity.interactAt(player, relativeHitPos, hand).consumesAction()) {
                             ap.itemUseCooldown = 3;
                             return true;
                         }
                         if (player.interactOn(entity, hand).consumesAction() && !(handWasEmpty && itemFrameEmpty)) {
+                        //?}
                             ap.itemUseCooldown = 3;
                             return true;
                         }

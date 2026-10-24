@@ -9,7 +9,8 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 val toolchains = extensions.getByType<JavaToolchainService>()
-val minecraftVersion = libs.versions.minecraft.get()
+val minecraftVersion = project.name
+val serverJavaVersion = extra["javaVersion"] as Int
 
 repositories {
     maven("https://repo.papermc.io/repository/maven-public/") { name = "PaperMC" }
@@ -38,7 +39,7 @@ tasks {
         minecraftVersion(minecraftVersion)
         runDirectory = layout.projectDirectory.dir("run")
         javaLauncher = toolchains.launcherFor {
-            languageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
+            languageVersion = JavaLanguageVersion.of(serverJavaVersion)
         }
 
         jvmArgs("-Dcom.mojang.eula.agree=true")

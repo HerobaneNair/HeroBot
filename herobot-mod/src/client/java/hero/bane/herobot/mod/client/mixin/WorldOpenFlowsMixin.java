@@ -45,9 +45,15 @@ public abstract class WorldOpenFlowsMixin {
             Runnable runnable,
             CallbackInfo ci
     ) {
+        //? if >=26.1 {
+        /*WorldData worldData = worldStem.worldDataAndGenSettings().data();
+
+        boolean customized = worldStem.worldDataAndGenSettings().genSettings().options().isOldCustomizedWorld();
+        *///?} else {
         WorldData worldData = worldStem.worldData();
 
         boolean customized = worldData.worldGenOptions().isOldCustomizedWorld();
+        //?}
         boolean experimental = worldData.worldGenSettingsLifecycle() != Lifecycle.stable();
 
         if (!customized && !experimental) return;

@@ -18,7 +18,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.item.component.UseCooldown;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 public final class ItemCooldown {
 
@@ -133,7 +136,7 @@ public final class ItemCooldown {
         int c = 0;
         ItemCooldowns cooldowns = player.getCooldowns();
         try {
-            for (Identifier id : List.copyOf(cooldowns.cooldowns.keySet())) {
+            for (Identifier id : List.copyOf(cooldownMap(cooldowns).keySet())) {
                 c++;
                 cooldowns.removeCooldown(id);
             }
@@ -151,10 +154,41 @@ public final class ItemCooldown {
     private static int getRemaining(ServerPlayer player, Item item) {
         ItemCooldowns cooldowns = player.getCooldowns();
 
-        ItemCooldowns.CooldownInstance instance = cooldowns.cooldowns.get(group(item));
+        Object instance = cooldownMap(cooldowns).get(group(item));
         if (instance == null) return 0;
 
-        return Math.max(0, instance.endTime() - cooldowns.tickCount);
+        try {
+            int endTime = (int) END_TIME.invoke(instance);
+            return Math.max(0, endTime - TICK_COUNT.getInt(cooldowns));
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static final Field COOLDOWNS;
+    private static final Field TICK_COUNT;
+    private static final Method END_TIME;
+
+    static {
+        try {
+            COOLDOWNS = ItemCooldowns.class.getDeclaredField("cooldowns");
+            COOLDOWNS.setAccessible(true);
+            TICK_COUNT = ItemCooldowns.class.getDeclaredField("tickCount");
+            TICK_COUNT.setAccessible(true);
+            END_TIME = Class.forName(ItemCooldowns.class.getName() + "$CooldownInstance").getDeclaredMethod("endTime");
+            END_TIME.setAccessible(true);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<Identifier, ?> cooldownMap(ItemCooldowns cooldowns) {
+        try {
+            return (Map<Identifier, ?>) COOLDOWNS.get(cooldowns);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private static boolean setDefault(ServerPlayer player, Item item) {

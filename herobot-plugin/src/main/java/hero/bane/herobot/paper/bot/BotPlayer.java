@@ -568,11 +568,20 @@ public class BotPlayer extends ServerPlayer implements ServerPlayerInterface {
     protected void markHurt() {
     }
 
+    //? if >=26.2 {
+    /*@Override
+    public void knockback(double strength, double x, double z, DamageSource source, float damage, boolean caused,
+                          Entity attacker, EntityKnockbackEvent.Cause cause) {
+        if (this.getAbilities().invulnerable) return;
+        super.knockback(strength, x, z, source, damage, caused, attacker, cause);
+    }
+    *///?} else {
     @Override
     public void knockback(double strength, double x, double z, Entity attacker, EntityKnockbackEvent.Cause cause) {
         if (this.getAbilities().invulnerable) return;
         super.knockback(strength, x, z, attacker, cause);
     }
+    //?}
 
     @Override
     public void move(@NonNull MoverType moverType, @NonNull Vec3 movement) {

@@ -55,11 +55,17 @@ public class ServerExplosionMixin {
         return list;
     }
 
+    //? if >=26.3 {
+    /*@Redirect(method = "hurtEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;pushFromExplosion(Lnet/minecraft/world/phys/Vec3;)V"))
+    *///?} else
     @Redirect(method = "hurtEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(Lnet/minecraft/world/phys/Vec3;)V"))
     private void explosionKBPing(Entity entity, Vec3 vec3) {
         if (entity instanceof BotPlayer botPlayer) {
             botPlayer.delayedExplosionKB(vec3);
         } else {
+            //? if >=26.3 {
+            /*entity.pushFromExplosion(vec3);
+            *///?} else
             entity.push(vec3);
         }
     }

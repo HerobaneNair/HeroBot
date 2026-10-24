@@ -1,5 +1,6 @@
 package hero.bane.herobot.mod.client.screen.ai;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import hero.bane.herobot.common.ai.AiScript;
 import hero.bane.herobot.common.ai.Comment;
 import hero.bane.herobot.common.ai.VarType;
@@ -17,7 +18,6 @@ import hero.bane.herobot.mod.client.screen.ai.starfield.StarField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -1202,7 +1202,7 @@ public final class ScriptCanvas {
             stopEditingComment();
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && shift) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT && shift) {
             shiftRightSpawn = true;
             shiftRightDragged = false;
             spawnStartTick = starTick;
@@ -1213,9 +1213,9 @@ public final class ScriptCanvas {
             return true;
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) { rightPressed = true; rightDownX = mx; rightDownY = my; return true; }
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) { rightPressed = true; rightDownX = mx; rightDownY = my; return true; }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && shift && doubled) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && shift && doubled) {
             Hit bypass = deepHit(worldX, worldY);
             if (bypass != null && bypass.parent() == null) {
                 host.bypassBlock(bypass.block().id());
@@ -1224,8 +1224,8 @@ public final class ScriptCanvas {
             }
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE
-                || (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && shift)) { panning = true; return true; }
+        if (button == InputConstants.MOUSE_BUTTON_MIDDLE
+                || (button == InputConstants.MOUSE_BUTTON_LEFT && shift)) { panning = true; return true; }
 
         Comment cm = commentAt(worldX, worldY);
         if (cm != null) {
@@ -1372,7 +1372,7 @@ public final class ScriptCanvas {
             return true;
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && stars.blackHoleGrabbed(mx, my)) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && stars.blackHoleGrabbed(mx, my)) {
             double[] pos = stars.blackHolePos();
             if (pos != null) {
                 holeDrag = true;
@@ -1685,7 +1685,7 @@ public final class ScriptCanvas {
     }
 
     public boolean mouseReleased(double mx, double my, int button) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && shiftRightSpawn) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT && shiftRightSpawn) {
             shiftRightSpawn = false;
             if (shiftRightDragged) {
                 stars.spawnConverging(Math.max(1, spawnCount), left, top, right, bottom, SPAWN_BURST_MEET);
@@ -1695,7 +1695,7 @@ public final class ScriptCanvas {
             }
             return true;
         }
-        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && rightPressed) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT && rightPressed) {
             rightPressed = false;
             panning = false;
             if (Math.hypot(mx - rightDownX, my - rightDownY) < RIGHT_CLICK_SLOP) openContextMenu(mx, my);
@@ -2249,46 +2249,46 @@ public final class ScriptCanvas {
         String t = editing.text();
         if (ctrl) {
             switch (key) {
-                case GLFW.GLFW_KEY_A -> { selAnchor = 0; caret = t.length(); }
-                case GLFW.GLFW_KEY_C -> copySelectionToClipboard();
-                case GLFW.GLFW_KEY_X -> {
+                case InputConstants.KEY_A -> { selAnchor = 0; caret = t.length(); }
+                case InputConstants.KEY_C -> copySelectionToClipboard();
+                case InputConstants.KEY_X -> {
                     if (hasSelection()) { copySelectionToClipboard(); commentEditSnapshot(); deleteSelection(); }
                 }
-                case GLFW.GLFW_KEY_V -> pasteClipboard();
-                case GLFW.GLFW_KEY_B -> toggleStyle(Comment.BOLD);
-                case GLFW.GLFW_KEY_I -> toggleStyle(Comment.ITALIC);
-                case GLFW.GLFW_KEY_U -> toggleStyle(Comment.UNDERLINE);
-                case GLFW.GLFW_KEY_S -> { if (shift) toggleStyle(Comment.STRIKE); }
-                case GLFW.GLFW_KEY_LEFT -> moveCaret(wordStart(t, caret), shift);
-                case GLFW.GLFW_KEY_RIGHT -> moveCaret(wordEnd(t, caret), shift);
-                case GLFW.GLFW_KEY_HOME -> moveCaret(0, shift);
-                case GLFW.GLFW_KEY_END -> moveCaret(t.length(), shift);
-                case GLFW.GLFW_KEY_BACKSPACE -> deleteTo(wordStart(t, caret));
-                case GLFW.GLFW_KEY_DELETE -> deleteTo(wordEnd(t, caret));
+                case InputConstants.KEY_V -> pasteClipboard();
+                case InputConstants.KEY_B -> toggleStyle(Comment.BOLD);
+                case InputConstants.KEY_I -> toggleStyle(Comment.ITALIC);
+                case InputConstants.KEY_U -> toggleStyle(Comment.UNDERLINE);
+                case InputConstants.KEY_S -> { if (shift) toggleStyle(Comment.STRIKE); }
+                case InputConstants.KEY_LEFT -> moveCaret(wordStart(t, caret), shift);
+                case InputConstants.KEY_RIGHT -> moveCaret(wordEnd(t, caret), shift);
+                case InputConstants.KEY_HOME -> moveCaret(0, shift);
+                case InputConstants.KEY_END -> moveCaret(t.length(), shift);
+                case InputConstants.KEY_BACKSPACE -> deleteTo(wordStart(t, caret));
+                case InputConstants.KEY_DELETE -> deleteTo(wordEnd(t, caret));
                 default -> { }
             }
             return true;
         }
         switch (key) {
-            case GLFW.GLFW_KEY_ESCAPE -> stopEditingComment();
-            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> {
+            case InputConstants.KEY_ESCAPE -> stopEditingComment();
+            case InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER -> {
                 if (shift) insertText("\n", activeStyle);
                 else stopEditingComment();
             }
-            case GLFW.GLFW_KEY_BACKSPACE -> deleteTo(Math.max(0, caret - 1));
-            case GLFW.GLFW_KEY_DELETE -> deleteTo(Math.min(t.length(), caret + 1));
-            case GLFW.GLFW_KEY_LEFT -> {
+            case InputConstants.KEY_BACKSPACE -> deleteTo(Math.max(0, caret - 1));
+            case InputConstants.KEY_DELETE -> deleteTo(Math.min(t.length(), caret + 1));
+            case InputConstants.KEY_LEFT -> {
                 if (!shift && hasSelection()) moveCaret(selStart(), false);
                 else moveCaret(Math.max(0, caret - 1), shift);
             }
-            case GLFW.GLFW_KEY_RIGHT -> {
+            case InputConstants.KEY_RIGHT -> {
                 if (!shift && hasSelection()) moveCaret(selEnd(), false);
                 else moveCaret(Math.min(t.length(), caret + 1), shift);
             }
-            case GLFW.GLFW_KEY_UP -> moveCaretLine(-1, shift);
-            case GLFW.GLFW_KEY_DOWN -> moveCaretLine(1, shift);
-            case GLFW.GLFW_KEY_HOME -> moveCaret(caretLine()[0], shift);
-            case GLFW.GLFW_KEY_END -> moveCaret(caretLine()[1], shift);
+            case InputConstants.KEY_UP -> moveCaretLine(-1, shift);
+            case InputConstants.KEY_DOWN -> moveCaretLine(1, shift);
+            case InputConstants.KEY_HOME -> moveCaret(caretLine()[0], shift);
+            case InputConstants.KEY_END -> moveCaret(caretLine()[1], shift);
             default -> {  }
         }
         return true;
